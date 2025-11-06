@@ -67,5 +67,9 @@ def create_app():
 
 
 if __name__ == '__main__':
-    app = create_app()
-    app.run(debug=True)
+    _app = create_app()
+    _app.run(debug=True)
+
+# Expose the Flask application as a module-level variable for WSGI servers (gunicorn, render, etc.)
+# Gunicorn will import `webapp.app:app` to get this application object.
+app = create_app()
