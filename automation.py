@@ -11,6 +11,7 @@ import time
 from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import ElementClickInterceptedException, NoSuchElementException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -74,12 +75,40 @@ def apply_player_ids(player_ids, out_dir=None, user_data_dir=None, profile_direc
         textarea.send_keys(' '.join(pids))
         time.sleep(0.3)
 
+        # detect potential captcha / overlay (reCAPTCHA often has data-sitekey)
+        try:
+            captcha_elems = driver.find_elements(By.CSS_SELECTOR, '[data-sitekey]')
+        except Exception:
+            captcha_elems = []
+        if captcha_elems:
+            apply_screenshot = out_dir / 'apply_result_captcha.png'
+            driver.save_screenshot(str(apply_screenshot))
+            return {
+                'apply_screenshot': str(apply_screenshot),
+                'status_rows': [],
+                'status_csv': None,
+                'captcha': True,
+                'message': 'captcha_or_overlay_detected'
+            }
+
         # click Apply Codes
         try:
             btn = driver.find_element(By.XPATH, "//button[normalize-space()='Apply Codes']")
         except Exception:
             btn = driver.find_element(By.CSS_SELECTOR, 'button')
-        btn.click()
+        try:
+            btn.click()
+        except ElementClickInterceptedException as e:
+            # click was intercepted by overlay (likely a modal or captcha). Save screenshot and return a special result.
+            apply_screenshot = out_dir / 'apply_result_intercepted.png'
+            driver.save_screenshot(str(apply_screenshot))
+            return {
+                'apply_screenshot': str(apply_screenshot),
+                'status_rows': [],
+                'status_csv': None,
+                'captcha': True,
+                'message': str(e)
+            }
         time.sleep(1.0)
 
         apply_screenshot = out_dir / 'apply_result.png'

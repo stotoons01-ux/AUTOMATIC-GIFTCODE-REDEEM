@@ -7,7 +7,12 @@
   <p><strong>Created:</strong> {{ job.created_at }}</p>
   <p><strong>Finished:</strong> {{ job.finished_at }}</p>
   {% if job.result_csv %}
-    <p><a class="button" href="/jobs_data/{{ job.result_csv.split('/')[-1] }}">Download Result CSV</a></p>
+    {# If result_csv looks like a path under jobs_data (contains a slash), show a download link. Otherwise show the text. #}
+    {% if '/' in job.result_csv %}
+      <p><a class="button" href="/jobs_data/{{ job.result_csv }}">Download Result (file)</a></p>
+    {% else %}
+      <p><strong>Result:</strong> {{ job.result_csv }}</p>
+    {% endif %}
   {% endif %}
   <a class="button" href="/jobs">Back</a>
 </div>

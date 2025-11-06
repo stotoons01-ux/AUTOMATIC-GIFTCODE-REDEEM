@@ -97,8 +97,30 @@ def worker_loop():
             try:
                 # run headless by default on remote worker
                 res = automation.apply_player_ids(player_list, out_dir=str(job_dir), headless=True)
-                result_csv = res.get('status_csv')
-                update_job_status(job_id, 'done', finished_at=time.strftime('%Y-%m-%dT%H:%M:%SZ'), result_csv=result_csv)
+                # if automation detected a captcha/overlay, mark job as blocked and save screenshot path
+                if res and res.get('captcha'):
+                    msg = res.get('message')
+                    ss = res.get('apply_screenshot')
+                    # store a path relative to OUT_DIR when possible so the web route can serve it
+                    rel = None
+                    try:
+                        if ss:
+                            rel = str(Path(ss).relative_to(OUT_DIR))
+                    except Exception:
+                        rel = None
+                    update_job_status(job_id, 'blocked', finished_at=time.strftime('%Y-%m-%dT%H:%M:%SZ'), result_csv=rel or msg)
+                else:
+                    result_csv = None
+                    if res:
+                        result_csv = res.get('status_csv')
+                    # convert to relative path if the CSV lives under OUT_DIR
+                    rel = None
+                    try:
+                        if result_csv:
+                            rel = str(Path(result_csv).relative_to(OUT_DIR))
+                    except Exception:
+                        rel = None
+                    update_job_status(job_id, 'done', finished_at=time.strftime('%Y-%m-%dT%H:%M:%SZ'), result_csv=rel or result_csv)
             except Exception as e:
                 update_job_status(job_id, 'error', finished_at=time.strftime('%Y-%m-%dT%H:%M:%SZ'), result_csv=str(e))
 
