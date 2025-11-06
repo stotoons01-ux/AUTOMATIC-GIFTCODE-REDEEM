@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="box">
+  <h2 class="subtitle">Players</h2>
+  <form method="post" action="/add_player" class="mb-4">
+    <div class="field has-addons">
+      <div class="control is-expanded">
+        <input class="input" name="player_id" placeholder="Enter player id">
+      </div>
+      <div class="control">
+        <button class="button is-primary">Add</button>
+      </div>
+    </div>
+  </form>
+
+  <form method="post" action="/apply">
+    <table class="table is-fullwidth">
+      <thead><tr><th></th><th>Player ID</th></tr></thead>
+      <tbody>
+        {% for p in players %}
+        <tr>
+          <td><input type="checkbox" name="player" value="{{ p }}"></td>
+          <td>{{ p }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="control">
+      <button class="button is-link">Apply Codes</button>
+    </div>
+  </form>
+</div>
+
+<div class="box">
+  <a class="button" href="/jobs">View Jobs</a>
+</div>
+
+{% endblock %}

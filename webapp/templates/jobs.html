@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="box">
+  <h2 class="subtitle">Jobs</h2>
+  <table class="table is-fullwidth">
+    <thead><tr><th>ID</th><th>Players</th><th>Status</th><th>Created</th><th>Finished</th><th>Result</th></tr></thead>
+    <tbody>
+      {% for j in jobs %}
+      <tr>
+        <td><a href="/job/{{ j.id }}">{{ j.id }}</a></td>
+        <td>{{ j.player_ids }}</td>
+        <td>{{ j.status }}</td>
+        <td>{{ j.created_at }}</td>
+        <td>{{ j.finished_at }}</td>
+        <td>{% if j.result_csv %}<a href="/jobs_data/{{ j.result_csv | basename }}">CSV</a>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a class="button" href="/">Back</a>
+</div>
+{% endblock %}
