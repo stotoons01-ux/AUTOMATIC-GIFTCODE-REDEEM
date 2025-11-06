@@ -12,7 +12,7 @@
         <td>{{ j.status }}</td>
         <td>{{ j.created_at }}</td>
         <td>{{ j.finished_at }}</td>
-        <td>{% if j.result_csv %}<a href="/jobs_data/{{ j.result_csv | basename }}">CSV</a>{% endif %}</td>
+  <td>{% if j.result_csv %}<a href="/jobs_data/{{ j.result_csv.split('/')[-1] }}">CSV</a>{% endif %}</td>
       </tr>
       {% endfor %}
     </tbody>

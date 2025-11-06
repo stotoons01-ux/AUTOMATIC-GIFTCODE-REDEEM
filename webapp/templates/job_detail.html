@@ -7,7 +7,7 @@
   <p><strong>Created:</strong> {{ job.created_at }}</p>
   <p><strong>Finished:</strong> {{ job.finished_at }}</p>
   {% if job.result_csv %}
-    <p><a class="button" href="/jobs_data/{{ job.result_csv | basename }}">Download Result CSV</a></p>
+    <p><a class="button" href="/jobs_data/{{ job.result_csv.split('/')[-1] }}">Download Result CSV</a></p>
   {% endif %}
   <a class="button" href="/jobs">Back</a>
 </div>
